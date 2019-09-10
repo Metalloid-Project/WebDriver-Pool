@@ -9,7 +9,7 @@
 
 	<name>Metalloid WebDriver Pool</name>
 	<url>https://github.com/Metalloid-Project/WebDriver-Pool</url>
-	<description>WebDriver Manager</description>
+	<description>WebDriver Thread-safe Pool</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,20 +18,6 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.1</version>
-				<configuration>
-					<systemPropertyVariables>
-						<webdriver.chrome.driver>src/test/java/chromedriver.exe</webdriver.chrome.driver>
-						<webdriver.gecko.driver>src/test/java/geckodriver.exe</webdriver.gecko.driver>
-					</systemPropertyVariables>
-					<includes>
-						<include>**/**.class</include>
-					</includes>
-				</configuration>
-			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
