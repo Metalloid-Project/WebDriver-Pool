@@ -1,89 +1,64 @@
 package com.github.metalloid.webdriver;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 
 public class WebDriverPool {
     private static final HashMap<Thread, WebDriver> POOL = new HashMap<>();
-    private static final HashMap<Thread, Object> OPTIONS = new HashMap<>();
-    private static final HashMap<Thread, Class<? extends WebDriver>> WRAPPERS = new HashMap<>();
+    private static final HashMap<Thread, Class<? extends MetalloidDriver>> WRAPPERS = new HashMap<>();
+    private static final HashMap<Thread, WebDriverOptions> OPTIONS = new HashMap<>();
 
-    public static void registerWrapper(Class<? extends WebDriver> wrapperClass) {
+    public static void registerWrapper(Class<? extends MetalloidDriver> wrapperClass) {
         WRAPPERS.put(Thread.currentThread(), wrapperClass);
     }
 
     public static void registerOptions(ChromeOptions chromeOptions) {
-        OPTIONS.put(Thread.currentThread(), chromeOptions);
+        OPTIONS.put(Thread.currentThread(), new WebDriverOptions<ChromeOptions>().put(chromeOptions));
     }
 
     public static void registerOptions(FirefoxOptions firefoxOptions) {
-        OPTIONS.put(Thread.currentThread(), firefoxOptions);
+        OPTIONS.put(Thread.currentThread(), new WebDriverOptions<FirefoxOptions>().put(firefoxOptions));
     }
 
-    public static void registerOptions(InternetExplorerDriver internetExplorerDriver) {
-        OPTIONS.put(Thread.currentThread(), internetExplorerDriver);
+    public static void registerOptions(InternetExplorerOptions internetExplorerOptions) {
+        OPTIONS.put(Thread.currentThread(), new WebDriverOptions<InternetExplorerOptions>().put(internetExplorerOptions));
     }
 
     public static void registerOptions(EdgeOptions edgeOptions) {
-        OPTIONS.put(Thread.currentThread(), edgeOptions);
+        OPTIONS.put(Thread.currentThread(), new WebDriverOptions<EdgeOptions>().put(edgeOptions));
     }
 
     public static void registerOptions(DesiredCapabilities desiredCapabilities) {
-        OPTIONS.put(Thread.currentThread(), desiredCapabilities);
+        OPTIONS.put(Thread.currentThread(), new WebDriverOptions<DesiredCapabilities>().put(desiredCapabilities));
     }
 
     public static WebDriver get() {
         Thread thread = Thread.currentThread();
         WebDriver driver = POOL.get(thread);
 
-        if (driver == null) {
+        if (driver != null) {
+            return driver;
+        } else {
             String browserName = System.getProperty("browser.name");
-            Object browserOptions = OPTIONS.get(Thread.currentThread());
+            if (browserName == null) throw new IllegalStateException("Use System.setProperty(\"browser.name\"); to initialize browser by its name");
 
-            switch (browserName.toLowerCase()) {
-                case "chrome":
-                    driver = new ChromeDriver((ChromeOptions) browserOptions);
-                    break;
-                case "ff":
-                case "firefox":
-                    driver = new FirefoxDriver((FirefoxOptions) browserOptions);
-                    break;
-                case "ie":
-                case "internet explorer":
-                    driver = new InternetExplorerDriver((InternetExplorerOptions) browserOptions);
-                    break;
-                case "edge":
-                    driver = new EdgeDriver((EdgeOptions) browserOptions);
-                    break;
-                case "remote":
-                    try {
-                        driver = new RemoteWebDriver(new URL(System.getProperty("webdriver.hub.url")), (DesiredCapabilities) browserOptions);
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-            }
-
-            driver = wrap(driver);
+            driver = WebDriverCreator.createInstance(OPTIONS.get(Thread.currentThread()));
 
             POOL.put(thread, driver);
-        }
 
-        return driver;
+            return driver;
+        }
+    }
+
+    public static MetalloidDriver getCustom() {
+        return wrap(get());
     }
 
     public static void closeSession() {
@@ -101,18 +76,22 @@ public class WebDriverPool {
         WRAPPERS.remove(thread);
     }
 
-    private static WebDriver wrap(WebDriver driver) {
+    public static boolean hasStoredInstance() {
+        return POOL.get(Thread.currentThread()) != null;
+    }
+
+    private static MetalloidDriver wrap(WebDriver driver) {
         Class<? extends WebDriver> wrapperClass = WRAPPERS.get(Thread.currentThread());
         if (wrapperClass != null) {
             try {
-                return wrapperClass.getConstructor(WebDriver.class).newInstance(driver);
+                return (MetalloidDriver) wrapperClass.getConstructor(WebDriver.class).newInstance(driver);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException("Wrapper constructor must have WebDriver as an argument!");
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            return driver;
+            throw new IllegalArgumentException("You did not specify custom WebDriver. Use `registerWrapper` and pass your class as an argument");
         }
     }
 }
