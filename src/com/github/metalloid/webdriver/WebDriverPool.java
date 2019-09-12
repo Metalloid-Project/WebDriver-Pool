@@ -15,6 +15,24 @@ public class WebDriverPool {
     private static final HashMap<Thread, Class<? extends MetalloidDriver>> WRAPPERS = new HashMap<>();
     private static final HashMap<Thread, WebDriverOptions> OPTIONS = new HashMap<>();
 
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(WebDriverPool::clean));
+
+        new Thread(() -> {
+            while (true) {
+                clean();
+            }
+        });
+    }
+
+    private static void clean() {
+        POOL.keySet().forEach(t -> {
+            if (!t.isAlive()) {
+                closeSession(t);
+            }
+        });
+    }
+
     public static void registerWrapper(Class<? extends MetalloidDriver> wrapperClass) {
         WRAPPERS.put(Thread.currentThread(), wrapperClass);
     }
@@ -62,7 +80,10 @@ public class WebDriverPool {
     }
 
     public static void closeSession() {
-        Thread thread = Thread.currentThread();
+        closeSession(Thread.currentThread());
+    }
+
+    static void closeSession(Thread thread) {
         WebDriver driver = POOL.get(thread);
 
         if (driver != null) {
