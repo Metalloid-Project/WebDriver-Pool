@@ -5,7 +5,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -53,10 +52,6 @@ public class WebDriverPool {
         OPTIONS.put(Thread.currentThread(), new WebDriverOptions<EdgeOptions>().put(edgeOptions));
     }
 
-    public static void registerOptions(DesiredCapabilities desiredCapabilities) {
-        OPTIONS.put(Thread.currentThread(), new WebDriverOptions<DesiredCapabilities>().put(desiredCapabilities));
-    }
-
     public static WebDriver get() {
         Thread thread = Thread.currentThread();
         WebDriver driver = POOL.get(thread);
@@ -67,7 +62,14 @@ public class WebDriverPool {
             String browserName = System.getProperty("browser.name");
             if (browserName == null) throw new IllegalStateException("Use System.setProperty(\"browser.name\"); to initialize browser by its name");
 
-            driver = WebDriverCreator.createInstance(OPTIONS.get(Thread.currentThread()));
+            String browserType = System.getProperty("browser.type");
+            WebDriverOptions options = OPTIONS.get(Thread.currentThread());
+
+            if (browserType != null && browserType.equals("remote")) {
+                driver = WebDriverCreator.createRemoteInstance(options);
+            } else {
+                driver = WebDriverCreator.createLocalInstance(options);
+            }
 
             POOL.put(thread, driver);
 
@@ -79,11 +81,7 @@ public class WebDriverPool {
         return wrap(get());
     }
 
-    public static void closeSession() {
-        closeSession(Thread.currentThread());
-    }
-
-    static void closeSession(Thread thread) {
+    public static void closeSession(Thread thread) {
         WebDriver driver = POOL.get(thread);
 
         if (driver != null) {
