@@ -2,6 +2,10 @@ package com.github.metalloid.webdriver;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -9,6 +13,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 abstract class Instance implements LocalInstance, RemoteInstance {
     static final Boolean HEADLESS = Boolean.parseBoolean(System.getProperty("headless"));
@@ -39,6 +44,47 @@ abstract class Instance implements LocalInstance, RemoteInstance {
         } catch (InvocationTargetException e) {
             throw new IllegalStateException(e.getCause().getMessage());
         }
+    }
+
+    Optional<WebDriverOptions<?>> getCustomOptionClass() {
+        String optionsClass;
+
+        switch(getSeleniumBrowserName()) {
+            case BrowserType.CHROME:
+                optionsClass = System.getProperty("chrome.options");
+
+                if (optionsClass != null) {
+                    return Optional.of(new WebDriverOptions<ChromeOptions>().put(optionsClass));
+                }
+
+                break;
+            case BrowserType.FIREFOX:
+                optionsClass = System.getProperty("firefox.options");
+
+                if (optionsClass != null) {
+                    return Optional.of(new WebDriverOptions<FirefoxOptions>().put(optionsClass));
+                }
+
+                break;
+            case BrowserType.IE:
+                optionsClass = System.getProperty("internet.explorer.options");
+
+                if (optionsClass != null) {
+                    return Optional.of(new WebDriverOptions<InternetExplorerOptions>().put(optionsClass));
+                }
+
+                break;
+            case BrowserType.EDGE:
+                optionsClass = System.getProperty("edge.options");
+
+                if (optionsClass != null) {
+                    return Optional.of(new WebDriverOptions<EdgeOptions>().put(optionsClass));
+                }
+
+                break;
+        }
+
+        return Optional.empty();
     }
 
     private static WebDriver createRemote(Capabilities capabilities) {

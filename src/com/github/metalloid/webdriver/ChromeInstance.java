@@ -4,21 +4,28 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.util.Optional;
+
 class ChromeInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions<ChromeOptions> webDriverOptions;
 
     @Override
     public void setOptions(WebDriverOptions options) {
-        if (options == null && HEADLESS) {
-            webDriverOptions = new WebDriverOptions<>();
-
-            ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(true);
-
-            webDriverOptions.put(chromeOptions);
+        Optional<WebDriverOptions<?>> optionalOfCustomOptions = this.getCustomOptionClass();
+        if (optionalOfCustomOptions.isPresent()) {
+            this.webDriverOptions = (WebDriverOptions<ChromeOptions>) optionalOfCustomOptions.get();
         } else {
-            this.webDriverOptions = options;
+            if (options == null && HEADLESS) {
+                webDriverOptions = new WebDriverOptions<>();
+
+                ChromeOptions chromeOptions = new ChromeOptions();
+                chromeOptions.setHeadless(true);
+
+                webDriverOptions.put(chromeOptions);
+            } else {
+                this.webDriverOptions = options;
+            }
         }
     }
 

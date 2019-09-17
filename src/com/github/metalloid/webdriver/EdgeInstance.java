@@ -3,13 +3,16 @@ package com.github.metalloid.webdriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 
+import java.util.Optional;
+
 class EdgeInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions webDriverOptions;
 
     @Override
     public void setOptions(WebDriverOptions options) {
-        this.webDriverOptions = options;
+        Optional<WebDriverOptions<?>> optionalOfCustomOptions = this.getCustomOptionClass();
+        this.webDriverOptions = optionalOfCustomOptions.orElse(options);
     }
 
     @Override

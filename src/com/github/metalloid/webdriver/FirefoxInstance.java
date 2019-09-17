@@ -4,21 +4,28 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.util.Optional;
+
 class FirefoxInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions<FirefoxOptions> webDriverOptions;
 
     @Override
     public void setOptions(WebDriverOptions options) {
-        if (options == null && HEADLESS) {
-            webDriverOptions = new WebDriverOptions<>();
-
-            FirefoxOptions firefoxOptions = new FirefoxOptions();
-            firefoxOptions.setHeadless(true);
-
-            webDriverOptions.put(firefoxOptions);
+        Optional<WebDriverOptions<?>> optionalOfCustomOptions = this.getCustomOptionClass();
+        if (optionalOfCustomOptions.isPresent()) {
+            this.webDriverOptions = (WebDriverOptions<FirefoxOptions>) optionalOfCustomOptions.get();
         } else {
-            this.webDriverOptions = options;
+            if (options == null && HEADLESS) {
+                webDriverOptions = new WebDriverOptions<>();
+
+                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                firefoxOptions.setHeadless(true);
+
+                webDriverOptions.put(firefoxOptions);
+            } else {
+                this.webDriverOptions = options;
+            }
         }
     }
 
