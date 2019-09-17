@@ -7,6 +7,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 public class WebDriverPool {
@@ -25,11 +26,9 @@ public class WebDriverPool {
     }
 
     private static void clean() {
-        POOL.keySet().forEach(t -> {
-            if (!t.isAlive()) {
-                closeSession(t);
-            }
-        });
+        try {
+            POOL.keySet().forEach(WebDriverPool::closeSession);
+        } catch (ConcurrentModificationException ignore) {} //the expection is thrown when one instance is closed concurrently by Shutdown Hook and this method
     }
 
     public static void registerWrapper(Class<? extends MetalloidDriver> wrapperClass) {
@@ -59,17 +58,10 @@ public class WebDriverPool {
         if (driver != null) {
             return driver;
         } else {
-            String browserName = System.getProperty("browser.name");
-            if (browserName == null) throw new IllegalStateException("Use System.setProperty(\"browser.name\"); to initialize browser by its name");
+            if (System.getProperty("browser.name") == null) throw new IllegalStateException("Use System.setProperty(\"browser.name\"); to initialize browser by its name");
 
-            String browserType = System.getProperty("browser.type");
             WebDriverOptions options = OPTIONS.get(Thread.currentThread());
-
-            if (browserType != null && browserType.equals("remote")) {
-                driver = WebDriverCreator.createRemoteInstance(options);
-            } else {
-                driver = WebDriverCreator.createLocalInstance(options);
-            }
+            driver = WebDriverCreator.createInstance(options);
 
             POOL.put(thread, driver);
 

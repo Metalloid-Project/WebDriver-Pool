@@ -1,88 +1,44 @@
 package com.github.metalloid.webdriver;
 
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.remote.BrowserType;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 class WebDriverCreator {
     private static final String BROWSER_NAME = System.getProperty("browser.name");
-    private static final String HUB_URL = System.getProperty("webdriver.hub.url");
+    private static String BROWSER_TYPE = System.getProperty("browser.type");
 
-    static WebDriver createLocalInstance(WebDriverOptions<?> options) {
+    static WebDriver createInstance(WebDriverOptions<?> options) {
+        Instance instance;
+
         switch (BROWSER_NAME.toLowerCase()) {
             case "chrome":
-                return createLocal(ChromeDriver.class, options);
+                instance = new ChromeInstance();
+                break;
             case "ff":
             case "firefox":
-                return createLocal(FirefoxDriver.class, options);
+                instance = new FirefoxInstance();
+                break;
             case "ie":
             case "internet explorer":
-                return createLocal(InternetExplorerDriver.class, options);
+                instance = new InternetExplorerInstance();
+                break;
             case "edge":
-                return createLocal(EdgeDriver.class, options);
+                instance = new EdgeInstance();
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Browser name [%s] is not supported! Possible names: [chrome] [ff] [firefox] [ie] [internet explorer] [edge]", BROWSER_NAME));
         }
 
-        throw new RuntimeException("browser not implemented");
-    }
+        instance.setOptions(options);
 
-    static WebDriver createRemoteInstance(WebDriverOptions<?> options) {
-        if (options == null) {
-            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-            desiredCapabilities.setBrowserName(getSeleniumBrowserName());
+        if (BROWSER_TYPE == null) BROWSER_TYPE = "local";
 
-            return createRemote(desiredCapabilities);
-        } else {
-            return createRemote(new DesiredCapabilities(options.get()));
-        }
-    }
-
-    private static WebDriver createLocal(Class<? extends WebDriver> webDriverClass, WebDriverOptions<?> options) {
-        try {
-            if (options == null) {
-                return webDriverClass.getConstructor().newInstance();
-            } else {
-                Object capabilities = options.get();
-                return webDriverClass.getConstructor(capabilities.getClass()).newInstance(capabilities);
-            }
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e.getCause().getMessage());
-        }
-    }
-
-    private static WebDriver createRemote(Capabilities capabilities) {
-        try {
-            return new RemoteWebDriver(new URL(HUB_URL), capabilities);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String getSeleniumBrowserName() {
-        switch (BROWSER_NAME.toLowerCase()) {
-            case "chrome":
-                return BrowserType.CHROME;
-            case "ff":
-            case "firefox":
-                return BrowserType.FIREFOX;
-            case "ie":
-            case "internet explorer":
-                return BrowserType.IE;
-            case "edge":
-                return BrowserType.EDGE;
+        switch (BROWSER_TYPE.toLowerCase()) {
+            case "remote":
+                return instance.createRemoteInstance().getWebDriver();
+            case "local":
+                return instance.createLocalInstance().getWebDriver();
         }
 
-        throw new RuntimeException("browser not implemented");
+        return null;
     }
 }
