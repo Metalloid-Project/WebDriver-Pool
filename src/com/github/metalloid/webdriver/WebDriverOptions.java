@@ -5,9 +5,9 @@ import org.openqa.selenium.MutableCapabilities;
 import java.util.Objects;
 
 class WebDriverOptions<T extends MutableCapabilities> {
-    private MutableCapabilities capabilities;
+    private T capabilities;
 
-    WebDriverOptions<T> put(MutableCapabilities capabilities) {
+    WebDriverOptions<T> put(T capabilities) {
         this.capabilities = Objects.requireNonNull(capabilities);
         return this;
     }
