@@ -14,6 +14,7 @@ public class WebDriverPool {
     private static final HashMap<Thread, WebDriver> POOL = new HashMap<>();
     private static final HashMap<Thread, Class<? extends MetalloidDriver>> WRAPPERS = new HashMap<>();
     private static final HashMap<Thread, WebDriverOptions> OPTIONS = new HashMap<>();
+    private static final Boolean CLOSE_SESSION_AUTOMATICALLY = Boolean.parseBoolean(System.getProperty("close.session.by.default"));
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(WebDriverPool::clean));
@@ -26,9 +27,11 @@ public class WebDriverPool {
     }
 
     private static void clean() {
-        try {
-            POOL.keySet().forEach(WebDriverPool::closeSession);
-        } catch (ConcurrentModificationException ignore) {} //the expection is thrown when one instance is closed concurrently by Shutdown Hook and this method
+        if (CLOSE_SESSION_AUTOMATICALLY) {
+            try {
+                POOL.keySet().forEach(WebDriverPool::closeSession);
+            } catch (ConcurrentModificationException ignore) {} //the exception is thrown when one instance is closed concurrently by Shutdown Hook and this method
+        }
     }
 
     public static void registerWrapper(Class<? extends MetalloidDriver> wrapperClass) {
