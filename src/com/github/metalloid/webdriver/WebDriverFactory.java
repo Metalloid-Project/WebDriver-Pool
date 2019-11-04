@@ -23,24 +23,30 @@ class WebDriverFactory {
         BrowserName browserName = OptionsCollector.getBrowserName();
         BrowserType browserType = OptionsCollector.getBrowserType();
 
-        if (browserName == CHROME && browserType == LOCAL) {
-            return new ChromeBrowser().createLocalInstance((ChromeOptions) options.get());
-        } else if (browserName == CHROME && browserType == REMOTE) {
-            return new ChromeBrowser().createRemoteInstance((ChromeOptions) options.get());
-        } else if (browserName == FIREFOX && browserType == LOCAL) {
-            return new FirefoxBrowser().createLocalInstance((FirefoxOptions) options.get());
-        } else if (browserName == FIREFOX && browserType == REMOTE) {
-            return new FirefoxBrowser().createRemoteInstance((FirefoxOptions) options.get());
-        } else if (browserName == INTERNET_EXPLORER && browserType == LOCAL) {
-            return new InternetExplorerBrowser().createLocalInstance((InternetExplorerOptions) options.get());
-        } else if (browserName == INTERNET_EXPLORER && browserType == REMOTE) {
-            return new InternetExplorerBrowser().createRemoteInstance((InternetExplorerOptions) options.get());
-        } else if (browserName == EDGE && browserType == LOCAL) {
-            return new EdgeBrowser().createLocalInstance((EdgeOptions) options.get());
-        } else if (browserName == EDGE && browserType == REMOTE) {
-            return new EdgeBrowser().createRemoteInstance((EdgeOptions) options.get());
-        } else {
-            throw new RuntimeException("Could not instantiate WebDriver");
+        try {
+            if (browserName == CHROME && browserType == LOCAL) {
+                return new ChromeBrowser().createLocalInstance((ChromeOptions) options.get());
+            } else if (browserName == CHROME && browserType == REMOTE) {
+                return new ChromeBrowser().createRemoteInstance((ChromeOptions) options.get());
+            } else if (browserName == FIREFOX && browserType == LOCAL) {
+                return new FirefoxBrowser().createLocalInstance((FirefoxOptions) options.get());
+            } else if (browserName == FIREFOX && browserType == REMOTE) {
+                return new FirefoxBrowser().createRemoteInstance((FirefoxOptions) options.get());
+            } else if (browserName == INTERNET_EXPLORER && browserType == LOCAL) {
+                return new InternetExplorerBrowser().createLocalInstance((InternetExplorerOptions) options.get());
+            } else if (browserName == INTERNET_EXPLORER && browserType == REMOTE) {
+                return new InternetExplorerBrowser().createRemoteInstance((InternetExplorerOptions) options.get());
+            } else if (browserName == EDGE && browserType == LOCAL) {
+                return new EdgeBrowser().createLocalInstance((EdgeOptions) options.get());
+            } else if (browserName == EDGE && browserType == REMOTE) {
+                return new EdgeBrowser().createRemoteInstance((EdgeOptions) options.get());
+            } else {
+                throw new RuntimeException("Could not instantiate WebDriver");
+            }
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException(String.format("Browser is set to [%s] but options were set to [%s]", OptionsCollector.getBrowserName(), options.get().getClass().getName()));
         }
     }
+
+
 }

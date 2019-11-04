@@ -15,7 +15,9 @@ class WindowSize {
     }
 
     static WindowSize getInstance(String windowSize) {
-        if (windowSize.contains("x")) {
+        if (windowSize == null) {
+            return new WindowSize(null);
+        } else if (windowSize.contains("x")) {
             String[] dimensions = windowSize.split("[x]");
 
             int width;

@@ -15,7 +15,11 @@ public class OptionsCollector {
     public static final String EDGE_OPTIONS_CLASS = System.getProperty("edge.options");
 
     public static BrowserName getBrowserName() {
-        return BrowserName.parse(BROWSER_NAME);
+        if (BROWSER_NAME == null || BROWSER_NAME.isEmpty()) {
+            throw new IllegalArgumentException("Property [browser.name] is required! Use System.setProperty(\"browser.name\", \"chrome\") as an example");
+        } else {
+            return BrowserName.parse(BROWSER_NAME);
+        }
     }
 
     public static WindowSize getWindowSize() {

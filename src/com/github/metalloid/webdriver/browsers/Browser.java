@@ -15,7 +15,7 @@ import java.net.URL;
 public abstract class Browser<Driver extends WebDriver, Capabilities extends MutableCapabilities> {
     private Class<Driver> driverClass;
 
-    Browser(Class<Driver> driverClass) {
+    public Browser(Class<Driver> driverClass) {
         this.driverClass = driverClass;
     }
 
