@@ -26,8 +26,18 @@ public class ChromeTests {
 
     @Test
     public void useOptionsClassToRegisterOptions() {
+        System.setProperty("close.browser.by.default", "true");
         System.setProperty("browser.name", "chrome");
         System.setProperty("chrome.options", "test.java.metalloid.mocks.TestChromeOptions");
+        WebDriverPool.get();
+    }
+
+    @Test
+    public void setWindowSizeWithProperties() {
+        System.setProperty("close.browser.by.default", "true");
+        System.setProperty("browser.name", "chrome");
+        System.setProperty("window.size", "1280x960");
+        System.setProperty("headless", "true");
         WebDriverPool.get();
     }
 }

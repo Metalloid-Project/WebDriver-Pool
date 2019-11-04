@@ -15,13 +15,13 @@ public class OptionsApplicator {
         OptionsCollector.getWindowSize().apply(driver);
     }
 
-    public static WebDriverOptions<ChromeOptions> apply(ChromeOptions options) {
+    private static WebDriverOptions<ChromeOptions> apply(ChromeOptions options) {
         Objects.requireNonNull(options);
         options.setHeadless(OptionsCollector.HEADLESS);
         return new WebDriverOptions<ChromeOptions>().put(options);
     }
 
-    public static WebDriverOptions<FirefoxOptions> apply(FirefoxOptions options) {
+    private static WebDriverOptions<FirefoxOptions> apply(FirefoxOptions options) {
         Objects.requireNonNull(options);
         options.setHeadless(OptionsCollector.HEADLESS);
         return new WebDriverOptions<FirefoxOptions>().put(options);

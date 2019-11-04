@@ -13,14 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public abstract class Browser<Driver extends WebDriver, Capabilities extends MutableCapabilities> {
-    private Class<Driver> driverClass;
+    private final Class<Driver> driverClass;
 
-    public Browser(Class<Driver> driverClass) {
+    protected Browser(Class<Driver> driverClass) {
         this.driverClass = driverClass;
-    }
-
-    public WebDriver createRemoteInstance() {
-        return createRemoteInstance(null);
     }
 
     public WebDriver createRemoteInstance(@Nullable Capabilities options) {
@@ -32,10 +28,6 @@ public abstract class Browser<Driver extends WebDriver, Capabilities extends Mut
         } else {
             return createRemoteWebDriver(new DesiredCapabilities(options));
         }
-    }
-
-    public WebDriver createLocalInstance() {
-        return createLocalInstance(null);
     }
 
     public WebDriver createLocalInstance(@Nullable Capabilities options) {

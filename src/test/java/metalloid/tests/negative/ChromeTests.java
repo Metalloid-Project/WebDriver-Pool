@@ -2,7 +2,6 @@ package test.java.metalloid.tests.negative;
 
 import com.github.metalloid.webdriver.WebDriverPool;
 import org.junit.Test;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class ChromeTests {

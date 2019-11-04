@@ -29,6 +29,6 @@ public class WebDriverOptions<T extends MutableCapabilities> {
     }
 
     public T get() {
-        return (T) capabilities;
+        return capabilities;
     }
 }

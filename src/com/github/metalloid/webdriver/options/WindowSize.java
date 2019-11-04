@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 class WindowSize {
     private static final IllegalArgumentException EXCEPTION = new IllegalArgumentException("Window size should be in format [0000x0000] or [maximized]");
 
-    private Dimension dimension;
+    private final Dimension dimension;
 
     private WindowSize(@Nullable Dimension dimension) {
         this.dimension = dimension;
