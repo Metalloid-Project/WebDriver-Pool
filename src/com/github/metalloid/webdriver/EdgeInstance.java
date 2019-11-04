@@ -5,6 +5,7 @@ import org.openqa.selenium.edge.EdgeDriver;
 
 import java.util.Optional;
 
+@Deprecated
 class EdgeInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions webDriverOptions;

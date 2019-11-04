@@ -5,15 +5,15 @@ import org.openqa.selenium.MutableCapabilities;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
-class WebDriverOptions<T extends MutableCapabilities> {
+public class WebDriverOptions<T extends MutableCapabilities> {
     private T capabilities;
 
-    WebDriverOptions<T> put(T capabilities) {
+    public WebDriverOptions<T> put(T capabilities) {
         this.capabilities = Objects.requireNonNull(capabilities);
         return this;
     }
 
-    WebDriverOptions<T> put(String capabilitiesClass) {
+    public WebDriverOptions<T> put(String capabilitiesClass) {
         Options<T> options;
         try {
             Class<?> clazz = Class.forName(capabilitiesClass);
@@ -28,7 +28,7 @@ class WebDriverOptions<T extends MutableCapabilities> {
         }
     }
 
-    T get() {
+    public T get() {
         return (T) capabilities;
     }
 }

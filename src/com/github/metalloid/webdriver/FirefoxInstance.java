@@ -6,6 +6,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.util.Optional;
 
+@Deprecated
 class FirefoxInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions<FirefoxOptions> webDriverOptions;

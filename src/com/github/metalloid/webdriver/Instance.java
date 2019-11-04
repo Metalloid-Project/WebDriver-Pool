@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+@Deprecated
 abstract class Instance implements LocalInstance, RemoteInstance {
     static final Boolean HEADLESS = Boolean.parseBoolean(System.getProperty("headless"));
     private static final String BROWSER_NAME = System.getProperty("browser.name");

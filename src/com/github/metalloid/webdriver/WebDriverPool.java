@@ -1,5 +1,8 @@
 package com.github.metalloid.webdriver;
 
+import com.github.metalloid.webdriver.options.OptionsApplicator;
+import com.github.metalloid.webdriver.options.OptionsCollector;
+import com.github.metalloid.webdriver.options.OptionsFactory;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
@@ -61,10 +64,11 @@ public class WebDriverPool {
         if (driver != null) {
             return driver;
         } else {
-            if (System.getProperty("browser.name") == null) throw new IllegalStateException("Use System.setProperty(\"browser.name\"); to initialize browser by its name");
+            WebDriverOptions options = OptionsFactory.getOptions(OPTIONS.get(Thread.currentThread()));
 
-            WebDriverOptions options = OPTIONS.get(Thread.currentThread());
-            driver = WebDriverCreator.createInstance(options);
+            driver = WebDriverFactory.createInstance(options);
+
+            OptionsApplicator.apply(driver);
 
             POOL.put(thread, driver);
 

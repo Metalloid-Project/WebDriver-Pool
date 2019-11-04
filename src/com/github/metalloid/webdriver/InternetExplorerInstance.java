@@ -1,11 +1,11 @@
 package com.github.metalloid.webdriver;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
 import java.util.Optional;
 
+@Deprecated
 class InternetExplorerInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions webDriverOptions;

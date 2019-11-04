@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.Optional;
 
+@Deprecated
 class ChromeInstance extends Instance implements LocalInstance, RemoteInstance {
     private WebDriver driver;
     private WebDriverOptions<ChromeOptions> webDriverOptions;
