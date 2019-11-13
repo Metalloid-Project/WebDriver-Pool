@@ -90,6 +90,10 @@ public class WebDriverPool {
         WRAPPERS.remove(thread);
     }
 
+    public static void closeSession() {
+        closeSession(Thread.currentThread());
+    }
+
     public static boolean hasStoredInstance() {
         return POOL.get(Thread.currentThread()) != null;
     }
