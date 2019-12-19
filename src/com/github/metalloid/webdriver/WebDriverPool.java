@@ -1,5 +1,8 @@
 package com.github.metalloid.webdriver;
 
+import com.github.metalloid.webdriver.options.OptionsApplicator;
+import com.github.metalloid.webdriver.options.OptionsCollector;
+import com.github.metalloid.webdriver.options.OptionsFactory;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
@@ -14,7 +17,6 @@ public class WebDriverPool {
     private static final HashMap<Thread, WebDriver> POOL = new HashMap<>();
     private static final HashMap<Thread, Class<? extends MetalloidDriver>> WRAPPERS = new HashMap<>();
     private static final HashMap<Thread, WebDriverOptions> OPTIONS = new HashMap<>();
-    private static final Boolean CLOSE_SESSION_AUTOMATICALLY = Boolean.parseBoolean(System.getProperty("close.session.by.default"));
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(WebDriverPool::clean));
@@ -27,7 +29,7 @@ public class WebDriverPool {
     }
 
     private static void clean() {
-        if (CLOSE_SESSION_AUTOMATICALLY) {
+        if (OptionsCollector.CLOSE_BROWSER_BY_DEFAULT) {
             try {
                 POOL.keySet().forEach(WebDriverPool::closeSession);
             } catch (ConcurrentModificationException ignore) {} //the exception is thrown when one instance is closed concurrently by Shutdown Hook and this method
@@ -61,10 +63,11 @@ public class WebDriverPool {
         if (driver != null) {
             return driver;
         } else {
-            if (System.getProperty("browser.name") == null) throw new IllegalStateException("Use System.setProperty(\"browser.name\"); to initialize browser by its name");
+            WebDriverOptions options = OptionsFactory.getOptions(OPTIONS.get(Thread.currentThread()));
 
-            WebDriverOptions options = OPTIONS.get(Thread.currentThread());
-            driver = WebDriverCreator.createInstance(options);
+            driver = WebDriverFactory.createInstance(options);
+
+            OptionsApplicator.apply(driver);
 
             POOL.put(thread, driver);
 
