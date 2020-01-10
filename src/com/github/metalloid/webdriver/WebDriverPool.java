@@ -97,6 +97,18 @@ public class WebDriverPool {
         return POOL.get(Thread.currentThread()) != null;
     }
 
+    public static void openUrl(String url) {
+        WebDriverPool.get().get(url);
+    }
+
+    public static String getCurrentUrl() {
+        return WebDriverPool.get().getCurrentUrl();
+    }
+
+    public static String getTitle() {
+        return WebDriverPool.get().getTitle();
+    }
+
     private static MetalloidDriver wrap(WebDriver driver) {
         Class<? extends WebDriver> wrapperClass = WRAPPERS.get(Thread.currentThread());
         if (wrapperClass != null) {
