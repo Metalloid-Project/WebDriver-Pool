@@ -9,9 +9,11 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class WebDriverPool {
     private static final HashMap<Thread, WebDriver> POOL = new HashMap<>();
@@ -110,14 +112,16 @@ public class WebDriverPool {
     }
 
     private static MetalloidDriver wrap(WebDriver driver) {
-        Class<? extends WebDriver> wrapperClass = WRAPPERS.get(Thread.currentThread());
+        Class<? extends MetalloidDriver> wrapperClass = WRAPPERS.get(Thread.currentThread());
         if (wrapperClass != null) {
+            Constructor<? extends MetalloidDriver> constructor;
             try {
-                return (MetalloidDriver) wrapperClass.getConstructor(WebDriver.class).newInstance(driver);
+                constructor = wrapperClass.getConstructor(WebDriver.class);
+                return constructor.newInstance(Objects.requireNonNull(driver));
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException("Wrapper constructor must have WebDriver as an argument!");
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(String.format("Metalloid failed to create an instance of %s class!", wrapperClass.getSimpleName()));
             }
         } else {
             throw new IllegalArgumentException("You did not specify custom WebDriver. Use `registerWrapper` and pass your class as an argument");
