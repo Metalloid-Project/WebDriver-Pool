@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.metalloid-project</groupId>
-	<artifactId>webdriver-pool</artifactId>
-	<version>1.0.7</version>
+	<artifactId>metalloid-webdriver-pool</artifactId>
+	<version>2.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Metalloid WebDriver Pool</name>
-	<url>https://github.com/Metalloid-Project/WebDriver-Pool</url>
+	<url>https://github.com/Rafal-Laskowski/Metalloid-WebDriver-Pool</url>
 	<description>WebDriver Thread-safe Pool</description>
 
 	<properties>
@@ -111,13 +111,13 @@
 			<name>Rafał Laskowski</name>
 			<email>metalloidproject@gmail.com</email>
 			<organization>TestOps - Rafał Laskowski</organization>
-			<organizationUrl>https://github.com/Metalloid-Project</organizationUrl>
+			<organizationUrl>https://github.com/Rafal-Laskowski</organizationUrl>
 		</developer>
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/Metalloid-Project/WebDriver-Pool.git</connection>
-		<developerConnection>scm:git:ssh://github.com/Metalloid-Project/WebDriver-Pool.git</developerConnection>
-		<url>https://github.com/Metalloid-Project/WebDriver-Pool</url>
+		<connection>scm:git:git://github.com/Rafal-Laskowski/Metalloid-WebDriver-Pool.git</connection>
+		<developerConnection>scm:git:ssh://github.com/Rafal-Laskowski/Metalloid-WebDriver-Pool.git</developerConnection>
+		<url>https://github.com/Rafal-Laskowski/Metalloid-WebDriver-Pool</url>
 	</scm>
 </project>
