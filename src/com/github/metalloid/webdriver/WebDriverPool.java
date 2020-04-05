@@ -121,7 +121,7 @@ public class WebDriverPool {
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException("Wrapper constructor must have WebDriver as an argument!");
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                throw new RuntimeException(String.format("Metalloid failed to create an instance of %s class!", wrapperClass.getSimpleName()));
+                throw new RuntimeException(String.format("Metalloid failed to create an instance of %s class!\nCause: ", wrapperClass.getSimpleName()), e.getCause());
             }
         } else {
             throw new IllegalArgumentException("You did not specify custom WebDriver. Use `registerWrapper` and pass your class as an argument");

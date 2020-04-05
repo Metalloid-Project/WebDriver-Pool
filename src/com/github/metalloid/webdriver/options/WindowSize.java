@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import javax.annotation.Nullable;
 
 class WindowSize {
-    private static final IllegalArgumentException EXCEPTION = new IllegalArgumentException("Window size should be in format [0000x0000] or [maximized]");
+    private static final String EXCEPTION_MESSAGE = "Window size should be in format [0000x0000] or [maximized]! Provided: [%s]";
 
     private final Dimension dimension;
 
@@ -17,7 +17,7 @@ class WindowSize {
     static WindowSize getInstance(String windowSize) {
         if (windowSize == null) {
             return new WindowSize(null);
-        } else if (windowSize.contains("x")) {
+        } else if (windowSize.matches("(\\d*)x(\\d*)")) {
             String[] dimensions = windowSize.split("[x]");
 
             int width;
@@ -27,14 +27,14 @@ class WindowSize {
                 width = Integer.parseInt(dimensions[0]);
                 height = Integer.parseInt(dimensions[1]);
             } catch (NumberFormatException e) {
-                throw EXCEPTION;
+                throw buildException(windowSize);
             }
 
             return new WindowSize(new Dimension(width, height));
         } else if (windowSize.equals("maximized")) {
             return new WindowSize(null);
         } else {
-            throw EXCEPTION;
+            throw buildException(windowSize);
         }
     }
 
@@ -44,5 +44,9 @@ class WindowSize {
         } else {
             driver.manage().window().setSize(dimension);
         }
+    }
+
+    static private IllegalArgumentException buildException(String providedValue) {
+        return new IllegalArgumentException(String.format(EXCEPTION_MESSAGE, providedValue));
     }
 }
