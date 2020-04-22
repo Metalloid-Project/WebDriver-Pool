@@ -95,20 +95,12 @@ public class WebDriverPool {
         WRAPPERS.remove(thread);
     }
 
+    public static void closeSession() {
+        closeSession(Thread.currentThread());
+    }
+
     public static boolean hasStoredInstance() {
         return POOL.get(Thread.currentThread()) != null;
-    }
-
-    public static void openUrl(String url) {
-        WebDriverPool.get().get(url);
-    }
-
-    public static String getCurrentUrl() {
-        return WebDriverPool.get().getCurrentUrl();
-    }
-
-    public static String getTitle() {
-        return WebDriverPool.get().getTitle();
     }
 
     private static MetalloidDriver wrap(WebDriver driver) {
